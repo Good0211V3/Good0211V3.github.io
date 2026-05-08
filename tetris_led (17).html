@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Strip Tetris</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            font-family: 'Press Start 2P', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+            position: relative;
+        }
+        
+        /* CRT scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                transparent 1px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 3px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 8s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+        
+        #game-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 30px;
+            background: linear-gradient(to bottom, #2d2d2d 0%, #1a1a1a 100%);
+            border: 8px solid #4a4a4a;
+            border-radius: 0;
+            box-shadow: 
+                inset 0 0 0 4px #666,
+                0 10px 30px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        
+        /* Arcade cabinet corner details */
+        #game-container::before,
+        #game-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 4px solid #666;
+        }
+        
+        #game-container::before {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        #game-container::after {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        #game-title {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #000;
+            border: 4px solid #666;
+            box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        #game-title h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+            color: #ff0000;
+            text-shadow: 
+                2px 2px 0 #660000,
+                4px 4px 0 #330000;
+            letter-spacing: 4px;
+        }
+        
+        #game-title p {
+            font-size: 8px;
+            margin: 0;
+            color: #ffff00;
+            letter-spacing: 2px;
+        }
+        
+        #led-grid {
+            background: #0a0a0a;
+            padding: 20px;
+            border: 6px solid #333;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.9),
+                0 0 0 2px #666;
+            position: relative;
+        }
+        
+        /* CRT screen glow */
+        #led-grid::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+            pointer-events: none;
+        }
+        
+        .led {
+            width: 18px;
+            height: 18px;
+            background: #1a1a1a;
+            margin: 4px;
+            display: inline-block;
+            position: relative;
+            border: 1px solid #0a0a0a;
+        }
+        
+        .led.active {
+            background: currentColor;
+            box-shadow: 
+                inset -2px -2px 4px rgba(0, 0, 0, 0.5),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+        }
+        
+        .led.ghost {
+            background: transparent;
+            border: 2px solid currentColor;
+            opacity: 0.4;
+        }
+        
+        .led.clearing {
+            animation: clearLineRetro 0.4s steps(4);
+        }
+        
+        @keyframes clearLineRetro {
+            0% { opacity: 1; }
+            25% { opacity: 0; }
+            50% { opacity: 1; }
+            75% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+        
+        .row {
+            display: flex;
+            height: 26px;
+        }
+        
+        .row.reverse {
+            flex-direction: row-reverse;
+        }
+        
+        #info-panel {
+            background: #1a1a1a;
+            padding: 0;
+            min-width: 280px;
+            border: 6px solid #333;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        
+        .info-section {
+            padding: 15px;
+            border-bottom: 4px solid #333;
+        }
+        
+        .info-section:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        
+        .info-value {
+            font-size: 20px;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+            letter-spacing: 3px;
+        }
+        
+        #score-display, #level-display, #lines-display {
+            margin-bottom: 15px;
+        }
+        
+        #score-display:last-child,
+        #level-display:last-child,
+        #lines-display:last-child {
+            margin-bottom: 0;
+        }
+        
+        h3 {
+            font-size: 10px;
+            color: #ffff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+        
+        #statistics {
+            padding: 15px;
+            background: #0a0a0a;
+            border-bottom: 4px solid #333;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8px;
+            margin: 8px 0;
+            color: #aaa;
+        }
+        
+        .stat-value {
+            color: #00ffff;
+            letter-spacing: 2px;
+        }
+        
+        .stat-divider {
+            margin: 12px 0;
+            padding-top: 12px;
+            border-top: 2px dashed #333;
+        }
+        
+        #next-piece {
+            padding: 15px;
+            background: #0a0a0a;
+            border-bottom: 4px solid #333;
+        }
+        
+        .next-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 22px);
+            gap: 4px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .next-cell {
+            width: 22px;
+            height: 22px;
+            background: #1a1a1a;
+            border: 1px solid #0a0a0a;
+        }
+        
+        .next-cell.filled {
+            background: currentColor;
+            box-shadow: 
+                inset -2px -2px 4px rgba(0, 0, 0, 0.5),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+        }
+        
+        #controls {
+            padding: 15px;
+            background: #0a0a0a;
+            font-size: 7px;
+            line-height: 2;
+            color: #888;
+        }
+        
+        #controls .control-title {
+            color: #ff00ff;
+            font-size: 8px;
+            margin-bottom: 10px;
+            display: block;
+            letter-spacing: 2px;
+        }
+        
+        #controls div {
+            margin: 5px 0;
+            padding-left: 10px;
+            position: relative;
+        }
+        
+        #controls div::before {
+            content: '►';
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+        
+        #game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            padding: 40px;
+            text-align: center;
+            display: none;
+            z-index: 1001;
+            border: 8px solid #ff0000;
+            box-shadow: 
+                0 0 0 4px #000,
+                0 0 0 8px #660000,
+                0 20px 50px rgba(0, 0, 0, 0.9);
+        }
+        
+        #game-over h2 {
+            color: #ff0000;
+            margin: 0 0 30px 0;
+            font-size: 24px;
+            letter-spacing: 4px;
+            text-shadow: 
+                2px 2px 0 #660000,
+                4px 4px 0 #330000;
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+        
+        #game-over > div {
+            margin: 15px 0;
+            font-size: 10px;
+            color: #aaa;
+        }
+        
+        #game-over span {
+            color: #00ff00;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        
+        button {
+            background: #ff0000;
+            color: #fff;
+            border: 4px solid #660000;
+            padding: 15px 30px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: 'Press Start 2P', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 
+                inset 0 0 0 2px #ff0000,
+                0 6px 0 #330000,
+                0 8px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            top: 0;
+            transition: all 0.1s;
+        }
+        
+        button:hover {
+            background: #ff3333;
+        }
+        
+        button:active {
+            top: 4px;
+            box-shadow: 
+                inset 0 0 0 2px #ff0000,
+                0 2px 0 #330000,
+                0 4px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        #pause-indicator {
+            display: none;
+            padding: 15px;
+            background: #000;
+            text-align: center;
+            font-size: 12px;
+            color: #ffff00;
+            letter-spacing: 2px;
+            border: 4px solid #ffff00;
+            animation: blink 1s step-end infinite;
+        }
+        
+        /* Retro color palette for pieces */
+        .piece-I { color: #00ffff !important; }
+        .piece-O { color: #ffff00 !important; }
+        .piece-T { color: #ff00ff !important; }
+        .piece-S { color: #00ff00 !important; }
+        .piece-Z { color: #ff0000 !important; }
+        .piece-J { color: #0000ff !important; }
+        .piece-L { color: #ff8800 !important; }
+        
+        /* INSERT COIN animation */
+        .insert-coin {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #ffff00;
+            animation: blink 1.5s step-end infinite;
+            letter-spacing: 2px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="insert-coin">★ PRESS START ★</div>
+    
+    <div id="game-container">
+        <div>
+            <div id="game-title">
+                <h1>TETRIS</h1>
+                <p>◄ CLASSIC ARCADE EDITION ►</p>
+            </div>
+            <div id="led-grid"></div>
+        </div>
+        <div id="info-panel">
+            <div class="info-section">
+                <div id="score-display">
+                    <div class="info-label">SCORE</div>
+                    <div class="info-value" id="score-value">0</div>
+                </div>
+                <div id="level-display">
+                    <div class="info-label">LEVEL</div>
+                    <div class="info-value" id="level-value">1</div>
+                </div>
+                <div id="lines-display">
+                    <div class="info-label">LINES</div>
+                    <div class="info-value" id="lines-value">0</div>
+                </div>
+            </div>
+            
+            <div id="statistics">
+                <h3>Statistics</h3>
+                <div>
+                    <div class="stat-row">
+                        <span>Pieces</span>
+                        <span class="stat-value" id="stat-pieces">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Singles</span>
+                        <span class="stat-value" id="stat-single">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Doubles</span>
+                        <span class="stat-value" id="stat-double">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Triples</span>
+                        <span class="stat-value" id="stat-triple">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Tetrises</span>
+                        <span class="stat-value" id="stat-tetris">0</span>
+                    </div>
+                    <div class="stat-divider">
+                        <div class="stat-row">
+                            <span>High Score</span>
+                            <span class="stat-value" id="high-score">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Pieces/Min</span>
+                            <span class="stat-value" id="stat-ppm">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="next-piece">
+                <h3>Next Piece</h3>
+                <div class="next-grid" id="next-grid"></div>
+            </div>
+            
+            <div id="controls">
+                <span class="control-title">CONTROLS</span>
+                <div>← → MOVE</div>
+                <div>↓ SOFT DROP</div>
+                <div>SPACE HARD DROP</div>
+                <div>↑ X ROTATE R</div>
+                <div>Z ROTATE L</div>
+                <div>P PAUSE</div>
+                <div>R RESTART</div>
+            </div>
+            
+            <div id="pause-indicator" class="paused">
+                ║ PAUSED ║
+            </div>
+        </div>
+    </div>
+    
+    <div id="game-over">
+        <h2>GAME OVER</h2>
+        <div>Final Score: <span id="final-score">0</span></div>
+        <div>Lines Cleared: <span id="final-lines">0</span></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        const COLS = 10;
+        const ROWS = 20;
+        const COLORS = {
+            I: '#0ff', // Cyan
+            O: '#ff0', // Yellow
+            T: '#a0f', // Purple
+            S: '#0f0', // Green
+            Z: '#f00', // Red
+            J: '#00f', // Blue
+            L: '#f80'  // Orange
+        };
+        
+        const SHAPES = {
+            I: [[1,1,1,1]],
+            O: [[1,1],[1,1]],
+            T: [[0,1,0],[1,1,1]],
+            S: [[0,1,1],[1,1,0]],
+            Z: [[1,1,0],[0,1,1]],
+            J: [[1,0,0],[1,1,1]],
+            L: [[0,0,1],[1,1,1]]
+        };
+        
+        let grid = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+        let currentPiece = null;
+        let nextPiece = null;
+        let score = 0;
+        let level = 1;
+        let lines = 0;
+        let gameLoop = null;
+        let isPaused = false;
+        let isGameOver = false;
+        let currentSpeed = 1000; // Track current speed separately
+        let speedIncreaseInterval = null; // Track the speed increase timer
+        
+        // Statistics
+        let stats = {
+            pieces: 0,
+            single: 0,
+            double: 0,
+            triple: 0,
+            tetris: 0,
+            highScore: parseInt(localStorage.getItem('tetrisHighScore') || '0'),
+            startTime: null
+        };
+        
+        // Create LED grid
+        const ledGrid = document.getElementById('led-grid');
+        const leds = [];
+        
+        // Create a flat array to map grid coordinates to LED elements
+        const ledMap = Array(ROWS).fill().map(() => Array(COLS).fill(null));
+        
+        for (let row = 0; row < ROWS; row++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'row' + (row % 2 === 1 ? ' reverse' : '');
+            leds[row] = [];
+            
+            for (let col = 0; col < COLS; col++) {
+                const led = document.createElement('div');
+                led.className = 'led';
+                rowDiv.appendChild(led);
+                
+                // Map the LED to the correct grid position
+                // For reversed rows, the physical LED position is mirrored
+                if (row % 2 === 1) {
+                    leds[row][COLS - 1 - col] = led;
+                    ledMap[row][COLS - 1 - col] = led;
+                } else {
+                    leds[row][col] = led;
+                    ledMap[row][col] = led;
+                }
+            }
+            
+            ledGrid.appendChild(rowDiv);
+        }
+        
+        // Create next piece grid
+        const nextGrid = document.getElementById('next-grid');
+        const nextCells = [];
+        for (let i = 0; i < 16; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'next-cell';
+            nextGrid.appendChild(cell);
+            nextCells.push(cell);
+        }
+        
+        class Piece {
+            constructor(type) {
+                this.type = type;
+                this.shape = SHAPES[type];
+                this.color = COLORS[type];
+                this.x = Math.floor(COLS / 2) - Math.floor(this.shape[0].length / 2);
+                this.y = 0;
+            }
+            
+            rotate(direction = 1) {
+                const newShape = [];
+                const rows = this.shape.length;
+                const cols = this.shape[0].length;
+                
+                if (direction === 1) {
+                    // Rotate clockwise
+                    for (let col = 0; col < cols; col++) {
+                        newShape[col] = [];
+                        for (let row = rows - 1; row >= 0; row--) {
+                            newShape[col].push(this.shape[row][col]);
+                        }
+                    }
+                } else {
+                    // Rotate counter-clockwise
+                    for (let col = cols - 1; col >= 0; col--) {
+                        newShape[cols - 1 - col] = [];
+                        for (let row = 0; row < rows; row++) {
+                            newShape[cols - 1 - col].push(this.shape[row][col]);
+                        }
+                    }
+                }
+                
+                const oldShape = this.shape;
+                this.shape = newShape;
+                
+                if (this.collides()) {
+                    // Try wall kicks
+                    const kicks = [
+                        {x: 1, y: 0}, {x: -1, y: 0}, 
+                        {x: 2, y: 0}, {x: -2, y: 0},
+                        {x: 0, y: -1}
+                    ];
+                    
+                    let kicked = false;
+                    for (let kick of kicks) {
+                        this.x += kick.x;
+                        this.y += kick.y;
+                        if (!this.collides()) {
+                            kicked = true;
+                            break;
+                        }
+                        this.x -= kick.x;
+                        this.y -= kick.y;
+                    }
+                    
+                    if (!kicked) {
+                        this.shape = oldShape;
+                    }
+                }
+            }
+            
+            collides() {
+                for (let row = 0; row < this.shape.length; row++) {
+                    for (let col = 0; col < this.shape[row].length; col++) {
+                        if (this.shape[row][col]) {
+                            const newX = this.x + col;
+                            const newY = this.y + row;
+                            
+                            if (newX < 0 || newX >= COLS || newY >= ROWS) {
+                                return true;
+                            }
+                            
+                            if (newY >= 0 && grid[newY][newX]) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            move(dx, dy) {
+                this.x += dx;
+                this.y += dy;
+                
+                if (this.collides()) {
+                    this.x -= dx;
+                    this.y -= dy;
+                    return false;
+                }
+                return true;
+            }
+            
+            hardDrop() {
+                let dropped = 0;
+                while (this.move(0, 1)) {
+                    dropped++;
+                }
+                score += dropped * 2;
+                return dropped;
+            }
+            
+            getGhostY() {
+                let ghostY = this.y;
+                // Temporarily move down to find landing position
+                const originalY = this.y;
+                while (!this.collides()) {
+                    ghostY = this.y;
+                    this.y++;
+                }
+                this.y = originalY; // Reset to original position
+                return ghostY;
+            }
+        }
+        
+        function getRandomPiece() {
+            const types = Object.keys(SHAPES);
+            const type = types[Math.floor(Math.random() * types.length)];
+            return new Piece(type);
+        }
+        
+        function spawnPiece() {
+            currentPiece = nextPiece || getRandomPiece();
+            nextPiece = getRandomPiece();
+            
+            stats.pieces++;
+            updateStats();
+            
+            if (currentPiece.collides()) {
+                gameOver();
+            }
+            
+            updateNextPieceDisplay();
+        }
+        
+        function updateNextPieceDisplay() {
+            nextCells.forEach(cell => {
+                cell.className = 'next-cell';
+                cell.style.background = '';
+            });
+            
+            if (nextPiece) {
+                const shape = nextPiece.shape;
+                const offsetX = Math.floor((4 - shape[0].length) / 2);
+                const offsetY = Math.floor((4 - shape.length) / 2);
+                
+                for (let row = 0; row < shape.length; row++) {
+                    for (let col = 0; col < shape[row].length; col++) {
+                        if (shape[row][col]) {
+                            const idx = (offsetY + row) * 4 + (offsetX + col);
+                            nextCells[idx].className = 'next-cell filled';
+                            nextCells[idx].style.background = nextPiece.color;
+                            nextCells[idx].style.color = nextPiece.color;
+                        }
+                    }
+                }
+            }
+        }
+        
+        function lockPiece() {
+            for (let row = 0; row < currentPiece.shape.length; row++) {
+                for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                    if (currentPiece.shape[row][col]) {
+                        const y = currentPiece.y + row;
+                        const x = currentPiece.x + col;
+                        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
+                            grid[y][x] = currentPiece.color;
+                        }
+                    }
+                }
+            }
+            
+            clearLines();
+            spawnPiece();
+        }
+        
+        function clearLines() {
+            let linesCleared = 0;
+            let clearedRows = [];
+            
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (grid[row].every(cell => cell !== 0)) {
+                    clearedRows.push(row);
+                    linesCleared++;
+                }
+            }
+            
+            if (linesCleared > 0) {
+                // Animate clearing lines
+                clearedRows.forEach(row => {
+                    for (let col = 0; col < COLS; col++) {
+                        ledMap[row][col].classList.add('clearing');
+                    }
+                });
+                
+                // Wait for animation, then clear ALL rows at once
+                setTimeout(() => {
+                    // Sort rows descending to remove from bottom to top (prevents index shifting issues)
+                    clearedRows.sort((a, b) => b - a);
+                    
+                    // Remove all cleared rows
+                    clearedRows.forEach(row => {
+                        grid.splice(row, 1);
+                    });
+                    
+                    // Add new empty rows at the top
+                    for (let i = 0; i < linesCleared; i++) {
+                        grid.unshift(Array(COLS).fill(0));
+                    }
+                    
+                    render();
+                }, 500);
+                
+                // Update statistics
+                lines += linesCleared;
+                switch(linesCleared) {
+                    case 1: stats.single++; break;
+                    case 2: stats.double++; break;
+                    case 3: stats.triple++; break;
+                    case 4: stats.tetris++; break;
+                }
+                
+                const points = [0, 100, 300, 500, 800][linesCleared];
+                score += points * level;
+                
+                // Flash score on good clears
+                if (linesCleared >= 3) {
+                    document.getElementById('score-value').style.animation = 'flashScore 0.5s';
+                    setTimeout(() => {
+                        document.getElementById('score-value').style.animation = '';
+                    }, 500);
+                }
+                
+                level = Math.floor(lines / 10) + 1;
+                
+                updateScore();
+                updateStats();
+                
+                if (gameLoop) {
+                    clearInterval(gameLoop);
+                    startGameLoop();
+                }
+            }
+        }
+        
+        function updateScore() {
+            document.getElementById('score-value').textContent = score;
+            document.getElementById('level-value').textContent = level;
+            document.getElementById('lines-value').textContent = lines;
+        }
+        
+        function updateStats() {
+            document.getElementById('stat-pieces').textContent = stats.pieces;
+            document.getElementById('stat-single').textContent = stats.single;
+            document.getElementById('stat-double').textContent = stats.double;
+            document.getElementById('stat-triple').textContent = stats.triple;
+            document.getElementById('stat-tetris').textContent = stats.tetris;
+            document.getElementById('high-score').textContent = stats.highScore;
+            
+            // Calculate pieces per minute
+            if (stats.startTime) {
+                const elapsed = (Date.now() - stats.startTime) / 1000 / 60; // minutes
+                const ppm = elapsed > 0 ? Math.round(stats.pieces / elapsed) : 0;
+                document.getElementById('stat-ppm').textContent = ppm;
+            }
+        }
+        
+        function render() {
+            // Clear all LEDs
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const led = ledMap[row][col];
+                    if (grid[row][col]) {
+                        led.className = 'led active';
+                        led.style.background = grid[row][col];
+                        led.style.color = grid[row][col];
+                        led.style.borderColor = '';
+                    } else {
+                        led.className = 'led';
+                        led.style.background = '';
+                        led.style.color = '';
+                        led.style.borderColor = '';
+                    }
+                }
+            }
+            
+            // Draw ghost piece (landing preview)
+            if (currentPiece) {
+                const ghostY = currentPiece.getGhostY();
+                
+                for (let row = 0; row < currentPiece.shape.length; row++) {
+                    for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                        if (currentPiece.shape[row][col]) {
+                            const y = ghostY + row;
+                            const x = currentPiece.x + col;
+                            if (y >= 0 && y < ROWS && x >= 0 && x < COLS && !grid[y][x]) {
+                                const led = ledMap[y][x];
+                                led.className = 'led ghost';
+                                led.style.color = currentPiece.color;
+                                led.style.borderColor = currentPiece.color;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Draw current piece (on top of ghost)
+            if (currentPiece) {
+                for (let row = 0; row < currentPiece.shape.length; row++) {
+                    for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                        if (currentPiece.shape[row][col]) {
+                            const y = currentPiece.y + row;
+                            const x = currentPiece.x + col;
+                            if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
+                                const led = ledMap[y][x];
+                                led.className = 'led active';
+                                led.style.background = currentPiece.color;
+                                led.style.color = currentPiece.color;
+                                led.style.borderColor = '';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(gameLoop);
+            if (speedIncreaseInterval) {
+                clearInterval(speedIncreaseInterval);
+                speedIncreaseInterval = null;
+            }
+            
+            // Update high score
+            if (score > stats.highScore) {
+                stats.highScore = score;
+                localStorage.setItem('tetrisHighScore', score.toString());
+                updateStats();
+            }
+            
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-lines').textContent = lines;
+            document.getElementById('game-over').style.display = 'block';
+        }
+        
+        function restartGame() {
+            // Stop everything first
+            clearInterval(gameLoop);
+            if (speedIncreaseInterval) {
+                clearInterval(speedIncreaseInterval);
+                speedIncreaseInterval = null;
+            }
+            
+            // Reset game state
+            grid = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            score = 0;
+            level = 1;
+            lines = 0;
+            isPaused = false;
+            isGameOver = false;
+            
+            // Reset speed to initial value
+            currentSpeed = 1000;
+            
+            // Reset statistics (except high score)
+            stats.pieces = 0;
+            stats.single = 0;
+            stats.double = 0;
+            stats.triple = 0;
+            stats.tetris = 0;
+            stats.startTime = Date.now();
+            
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('pause-indicator').style.display = 'none';
+            
+            updateScore();
+            updateStats();
+            spawnPiece();
+            
+            // Start fresh game loop with reset speed
+            gameLoop = setInterval(update, currentSpeed);
+            
+            // Start fresh speed increase timer
+            startSpeedIncrease();
+        }
+        
+        function togglePause() {
+            if (isGameOver) return;
+            
+            isPaused = !isPaused;
+            document.getElementById('pause-indicator').style.display = isPaused ? 'block' : 'none';
+            
+            if (isPaused) {
+                clearInterval(gameLoop);
+            } else {
+                startGameLoop();
+            }
+        }
+        
+        function update() {
+            if (isPaused || isGameOver) return;
+            
+            if (!currentPiece.move(0, 1)) {
+                lockPiece();
+            }
+            render();
+        }
+        
+        function startGameLoop() {
+            currentSpeed = Math.max(100, 1000 - (level - 1) * 100);
+            gameLoop = setInterval(update, currentSpeed);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver && e.key !== 'r' && e.key !== 'R') return;
+            if (isPaused && e.key !== 'p' && e.key !== 'P' && e.key !== 'r' && e.key !== 'R') return;
+            
+            let moved = false;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    moved = currentPiece.move(-1, 0);
+                    e.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    moved = currentPiece.move(1, 0);
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    if (currentPiece.move(0, 1)) {
+                        score += 1;
+                        updateScore();
+                        moved = true;
+                    }
+                    e.preventDefault();
+                    break;
+                case 'ArrowUp':
+                case 'x':
+                case 'X':
+                    currentPiece.rotate(1);
+                    moved = true;
+                    e.preventDefault();
+                    break;
+                case 'z':
+                case 'Z':
+                    currentPiece.rotate(-1);
+                    moved = true;
+                    e.preventDefault();
+                    break;
+                case ' ':
+                    currentPiece.hardDrop();
+                    lockPiece();
+                    moved = true;
+                    e.preventDefault();
+                    break;
+                case 'p':
+                case 'P':
+                    togglePause();
+                    e.preventDefault();
+                    return;
+                case 'r':
+                case 'R':
+                    restartGame();
+                    e.preventDefault();
+                    return;
+            }
+            
+            if (moved && !isPaused && !isGameOver) {
+                render();
+            }
+        });
+        
+        // Continuous speed increase - makes game harder over time
+        function startSpeedIncrease() {
+            // Clear any existing interval first to prevent duplicates
+            if (speedIncreaseInterval) {
+                clearInterval(speedIncreaseInterval);
+            }
+            
+            speedIncreaseInterval = setInterval(() => {
+                if (!isGameOver && !isPaused && currentSpeed > 100) {
+                    currentSpeed = Math.max(100, currentSpeed - 50); // Decrease by 50ms every 5 seconds
+                    clearInterval(gameLoop);
+                    gameLoop = setInterval(update, currentSpeed);
+                }
+            }, 5000); // Every 5 seconds
+        }
+        
+        // Initialize game
+        stats.startTime = Date.now();
+        updateStats();
+        spawnPiece();
+        startGameLoop();
+        startSpeedIncrease();
+        render();
+    </script>
+</body>
+</html>
