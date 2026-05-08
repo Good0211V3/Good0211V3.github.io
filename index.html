@@ -654,6 +654,23 @@
         color: var(--muted);
         line-height: 1.85;
       }
+      .team-link {
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        color: var(--faint);
+        border: 1px solid var(--line-mid);
+        padding: 0.55rem 1rem;
+        margin-top: 20px;
+        white-space: nowrap;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .team-link:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
 
       /* ── SHOWCASE ── */
       #showcase {
@@ -1230,6 +1247,7 @@
           <p class="team-bio">
             Core engine architecture, LED function, C++ optimisation, and basically everything.
           </p>
+          <a href="tamir.html" class="team-link">WEBSITE</a>
         </div>
         <div class="team-card">
           <div class="team-card-num">MEMBER · 02</div>
@@ -1239,6 +1257,7 @@
           <p class="team-bio">
             The handsome guy who managed our team document resources.
           </p>
+          <a href="zamka.html" class="team-link">WEBSITE</a>
         </div>
         <div class="team-card">
           <div class="team-card-num">MEMBER · 03</div>
@@ -1248,6 +1267,7 @@
           <p class="team-bio">
             Скоч маш сайн тасласан.
           </p>
+          <a href="bataa.html" class="team-link">WEBSITE</a>
         </div>
       </div>
       <div style="height: 5.5rem"></div>
@@ -1549,7 +1569,7 @@
               <div class="doc-info-name">Project Report</div>
               <div class="doc-info-meta">DOCS · 2026 · MONGOL</div>
             </div>
-            <a href="#" class="doc-link">[VIEW] →</a>
+            <a href="mongol.pdf" class="doc-link">[VIEW] →</a>
           </div>
           <div class="doc-row">
             <div class="doc-idx">DOC · 02</div>
@@ -1557,7 +1577,7 @@
               <div class="doc-info-name">Project Report</div>
               <div class="doc-info-meta">DOCS · 2026 · ENGLISH</div>
             </div>
-            <a href="#" class="doc-link">[VIEW] →</a>
+            <a href="english.pdf" class="doc-link">[VIEW] →</a>
           </div>
           <div class="doc-row">
             <div class="doc-idx">DOC · 02</div>
@@ -1694,39 +1714,46 @@
               </div>
             </div>
           </div>
-          <div class="contact-form-side">
+          <form class="contact-form-side" action="https://formspree.io/f/xlgzloze" method="POST">
             <div class="cf-field">
-              <label class="cf-label">NAME</label>
-              <input type="text" class="cf-input" placeholder="YOUR NAME" />
+              <label class="cf-label">NAME
+              <input type="text" class="cf-input" name="Name" placeholder="YOUR NAME" />
+              </label>
             </div>
             <div class="cf-field">
-              <label class="cf-label">EMAIL</label>
+              <label class="cf-label" name="E-mail" >EMAIL
               <input
                 type="email"
                 class="cf-input"
                 placeholder="YOUR@EMAIL.COM"
+                name="E-mail"
               />
+              </label>
             </div>
             <div class="cf-field">
-              <label class="cf-label">SUBJECT</label>
+              <label class="cf-label">SUBJECT
               <input
                 type="text"
                 class="cf-input"
                 placeholder="WHAT IS THIS ABOUT"
+                name="What is this about?"
               />
+              </label>
             </div>
             <div class="cf-field">
-              <label class="cf-label">MESSAGE</label>
+              <label class="cf-label" name="Tung tung tung sahur">MESSAGE
               <textarea
                 class="cf-textarea"
                 placeholder="TYPE YOUR MESSAGE HERE... (type type haha!)"
+                name="text"
               ></textarea>
+              </label>
             </div>
-            <button class="cf-submit" type="button">
+            <button class="cf-submit" type="submit">
               <span>[TRANSMIT] - Send Message</span>
               <span>→</span>
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </section>
@@ -1767,3 +1794,5 @@
     </script>
   </body>
 </html>
+
+
