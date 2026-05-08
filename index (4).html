@@ -1,0 +1,1897 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Literal hellhole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Barlow:wght@300;400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #000000;
+        --bg-alt: #020202;
+        --bg-card: #030303;
+        --text: #dedede;
+        --muted: #cacaca;
+        --faint: #535353;
+        --mfaint: #8f8f8f;
+        --accent: #c4c4c4;
+        --accent-dim: #747474;
+        --line: #242424;
+        --line-mid: #242424;
+        --F-display: "Bebas Neue", sans-serif;
+        --F-cond: "Barlow Condensed", sans-serif;
+        --F-body: "Barlow", sans-serif;
+        --F-mono: "IBM Plex Mono", monospace;
+        --image-tamir: url(tamii.jpg) ;
+        --image-zamka: url(zamka.jpg);
+        --image-bataa: url(bataa.jpg);
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--F-body);
+        font-weight: 400;
+        line-height: 1.7;
+        cursor: crosshair;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+        cursor: crosshair;
+      }
+      ::selection {
+        background: var(--accent);
+        color: var(--bg);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--accent-dim);
+        z-index: 200;
+      }
+
+      nav {
+        position: fixed;
+        top: 2px;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 3rem;
+        transition:
+          background 0.4s,
+          border-color 0.4s;
+        border-bottom: 1px solid transparent;
+      }
+      nav.scrolled {
+        background: var(--bg-alt);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-color: var(--line);
+      }
+      .nav-logo {
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+      .nav-logo b {
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .nav-logo img {
+        width: 100px;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: f;
+      }
+      .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+      }
+      .nav-links a {
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: var(--faint);
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--accent);
+      }
+
+      #hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 6rem 3rem 4.5rem;
+        overflow: hidden;
+      }
+      #hero-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 36px 36px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      #hero::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(transparent, var(--bg));
+        pointer-events: none;
+        z-index: 0;
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 1300px;
+      }
+      .hero-tag {
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--accent);
+        margin-bottom: 1.8rem;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.3s forwards;
+      }
+      h1.hero-title {
+        font-family: var(--F-display);
+        font-size: clamp(96px, 16vw, 230px);
+        line-height: 0.86;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        opacity: 0;
+        animation: fadeUp 0.8s 0.5s forwards;
+      }
+      .hero-title-row {
+        display: flex;
+        align-items: center;
+        gap: clamp(40rem, 4vw, 5rem);
+        margin-bottom: 3.5rem;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.5s forwards;
+      }
+      .hero-title-row h1.hero-title {
+        opacity: 1;
+        animation: none;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      .hero-title-img {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: baseline;
+      }
+      .hero-title-img img {
+        width: clamp(500px, 20vw, 340px);
+        height: auto;
+        object-fit: contain;
+        opacity: 0.88;
+        filter: grayscale(100%);
+        display: block;
+      }
+      h1.hero-title .dim {
+        color: var(--faint);
+      }
+      h1.hero-title .mdim {
+        color: var(--mfaint);
+      }
+      .hero-bottom {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.9s forwards;
+      }
+      .hero-desc {
+        font-size: 17px;
+        font-weight: 300;
+        color: var(--muted);
+        max-width: 360px;
+        line-height: 1.9;
+        font-family: var(--F-body);
+      }
+      .hero-stats {
+        display: flex;
+        gap: 3rem;
+      }
+      .hero-stat-val {
+        display: block;
+        font-family: var(--F-cond);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--text);
+      }
+      .hero-stat-label {
+        display: block;
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.25em;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .scroll-marker {
+        position: absolute;
+        right: 3rem;
+        bottom: 3rem;
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.28em;
+        color: var(--faint);
+        writing-mode: vertical-rl;
+        z-index: 1;
+        animation: fadeIn 1s 1.8s both;
+      }
+
+      section {
+        border-top: 1px solid var(--line);
+      }
+      .wrap {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 5.5rem 3rem;
+      }
+
+      .s-label {
+        display: flex;
+        align-items: baseline;
+        gap: 1.25rem;
+        margin-bottom: 4rem;
+      }
+      .s-index {
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        color: var(--accent-dim);
+      }
+      .s-name {
+        font-family: var(--F-cond);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      #about {
+        background: var(--bg-alt);
+      }
+      .about-grid {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 5rem;
+        align-items: start;
+      }
+      .about-eyebrow {
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        line-height: 2;
+        padding-top: 5px;
+      }
+      .about-manifesto {
+        font-family: var(--F-cond);
+        font-size: clamp(26px, 3.2vw, 40px);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        line-height: 1.3;
+        color: var(--text);
+        margin-bottom: 2.2rem;
+      }
+      .about-body {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 2;
+        max-width: 580px;
+      }
+      .about-body + .about-body {
+        margin-top: 1rem;
+      }
+
+      .hw-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        background: var(--line-mid);
+        border: 1px solid var(--line-mid);
+        margin: 0 3rem;
+        max-width: calc(1300px - 0px);
+        margin: auto;
+      }
+      @media (max-width: 900px) {
+        .hw-grid {
+          grid-template-columns: repeat(2, 1fr);
+          margin: 0;
+        }
+      }
+      @media (max-width: 560px) {
+        .hw-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .hw-card {
+        background: var(--bg);
+        padding: 2.2rem 2rem;
+        transition: background 0.25s;
+      }
+      .hw-card:hover {
+        background: var(--bg-card);
+      }
+      .hw-num {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--accent-dim);
+        margin-bottom: 1.1rem;
+      }
+      .hw-name {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.35rem;
+      }
+      .hw-spec {
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 1rem;
+      }
+      .hw-desc {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.85;
+      }
+
+      #team {
+        background: var(--bg-alt);
+      }
+
+      #arch {
+        background: var(--bg-alt);
+      }
+      .arch-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+      }
+      @media (max-width: 640px) {
+        .arch-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .arch-item {
+        padding: 2.8rem 0;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      .arch-item:nth-last-child(-n + 2) {
+        border-bottom: none;
+      }
+      .arch-item:nth-child(odd) {
+        padding-right: 4rem;
+        border-right: 1px solid var(--line);
+      }
+      .arch-item:nth-child(even) {
+        padding-left: 4rem;
+      }
+      .arch-n {
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        color: var(--accent-dim);
+        padding-top: 3px;
+      }
+      .arch-name {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+      }
+      .arch-desc {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.85;
+      }
+
+      .specs-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .specs-table tr {
+        border-bottom: 1px solid var(--line);
+      }
+      .specs-table tr:first-child {
+        border-top: 1px solid var(--line);
+      }
+      .specs-table td {
+        padding: 1.1rem 0;
+        vertical-align: top;
+      }
+      .specs-table td:first-child {
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+        width: 38%;
+        text-transform: uppercase;
+        padding-top: 1.2rem;
+      }
+      .specs-table td:last-child {
+        font-family: var(--F-cond);
+        font-size: 17.5px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--text);
+      }
+
+      #source {
+        background: var(--bg-alt);
+      }
+      .source-inner {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 7rem 3rem;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4rem;
+        align-items: center;
+      }
+      @media (max-width: 700px) {
+        .source-inner {
+          grid-template-columns: 1fr;
+        }
+      }
+      .source-head {
+        font-family: var(--F-display);
+        font-size: clamp(60px, 9vw, 120px);
+        line-height: 0.9;
+        color: var(--text);
+      }
+      .source-head small {
+        display: block;
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        font-weight: 400;
+      }
+      .source-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .src-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2.5rem;
+        padding: 1rem 1.4rem;
+        border: 1px solid var(--line-mid);
+        min-width: 260px;
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .src-btn:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 1.8rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+      .ft {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--faint);
+      }
+      .ft b {
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      /* ── TEAM ── */
+      #team {
+        background: var(--bg);
+      }
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        background: var(--line-mid);
+        border: 1px solid var(--line-mid);
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+      @media (max-width: 900px) {
+        .team-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 560px) {
+        .team-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .team-card {
+        background: var(--bg);
+        padding: 2.4rem 2rem;
+        transition: background 0.25s;
+        position: relative;
+      }
+      .team-card:hover {
+        background: var(--bg-card);
+      }
+      .team-card-num {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--accent-dim);
+        margin-bottom: 1.4rem;
+        padding-bottom: 30px;
+      }
+      .team-avatar {
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--line-mid);
+        border-radius: 50%;
+        background: var(--bg-card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--F-mono);
+        font-size: 14px;
+        color: var(--accent);
+        margin-bottom: 3.4rem;
+        margin-top: 2rem;
+        margin-left: 3rem;
+        letter-spacing: 0;
+        z-index: 2;
+      }
+      .team-avatar img {
+        width: 140px;
+        height: 140px;
+        z-index: 1;
+        border-radius: 50%;
+        border: 1px solid var(--line-mid);
+      }
+      .team-name {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+      .team-role {
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        margin-bottom: 0.9rem;
+        text-transform: uppercase;
+      }
+      .team-bio {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.85;
+      }
+      .team-link {
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        color: var(--faint);
+        border: 1px solid var(--line-mid);
+        padding: 0.55rem 1rem;
+        margin-top: 20px;
+        white-space: nowrap;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .team-link:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
+
+      /* ── SHOWCASE ── */
+      #showcase {
+        background: var(--bg-alt);
+      }
+      .showcase-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1px;
+        background: var(--line-mid);
+        border: 1px solid var(--line-mid);
+      }
+      @media (max-width: 700px) {
+        .showcase-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .showcase-item {
+        background: var(--bg-alt);
+        padding: 3rem 2.5rem;
+        transition: background 0.25s;
+      }
+      .showcase-item:hover {
+        background: var(--bg-card);
+      }
+      .showcase-item.wide {
+        grid-column: 1 / -1;
+      }
+      .showcase-tag {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.25em;
+        color: var(--accent-dim);
+        margin-bottom: 1.4rem;
+      }
+      .showcase-title {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.8rem;
+      }
+      .showcase-desc {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.85;
+        max-width: 480px;
+      }
+
+      /* ── SHOWCASE MEDIA (updated) ── */
+      .showcase-media {
+        margin-top: 2rem;
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--line-mid);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Image variant */
+      .showcase-media.is-image {
+        height: 220px;
+      }
+      .showcase-media.is-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        filter: grayscale(20%);
+        transition: filter 0.35s, transform 0.45s;
+      }
+      .showcase-item:hover .showcase-media.is-image img {
+        filter: grayscale(0%);
+        transform: scale(1.025);
+      }
+
+      /* Hero image (tall) */
+      .showcase-media.is-image.tall {
+        height: 340px;
+      }
+
+      /* Video embed (iframe / YouTube) */
+      .showcase-media.is-video {
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 */
+      }
+      .showcase-media.is-video iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+
+      /* Native video file */
+      .showcase-media.is-video-file {
+        height: 220px;
+      }
+      .showcase-media.is-video-file video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Empty / placeholder state — grid + label shown when src is absent */
+      .showcase-media-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        pointer-events: none;
+      }
+      .showcase-media-placeholder::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      .showcase-media-placeholder span {
+        position: relative;
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.24em;
+        color: var(--faint);
+        text-transform: uppercase;
+        background: var(--bg);
+        padding: 0.3rem 0.7rem;
+        border: 1px solid var(--line-mid);
+      }
+
+      .showcase-stat-row {
+        display: flex;
+        gap: 3rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--line);
+      }
+      .showcase-stat-val {
+        font-family: var(--F-cond);
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        display: block;
+      }
+      .showcase-stat-lbl {
+        font-family: var(--F-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.24em;
+        color: var(--muted);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── DOCUMENTS ── */
+      #docs {
+        background: var(--bg);
+      }
+      .docs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid var(--line-mid);
+      }
+      .doc-row {
+        display: grid;
+        grid-template-columns: 56px 1fr auto;
+        align-items: center;
+        gap: 2rem;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--line);
+        transition: background 0.2s;
+      }
+      .doc-row:last-child {
+        border-bottom: none;
+      }
+      .doc-row:hover {
+        background: var(--bg-card);
+      }
+      .doc-idx {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.2em;
+        color: var(--accent-dim);
+      }
+      .doc-info-name {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.2rem;
+      }
+      .doc-info-meta {
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+      }
+      .doc-link {
+        font-family: var(--F-mono);
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        color: var(--faint);
+        border: 1px solid var(--line-mid);
+        padding: 0.55rem 1rem;
+        white-space: nowrap;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .doc-link:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
+
+      /* ── PRESENTATION ── */
+      #presentation {
+        background: var(--bg-alt);
+      }
+      .pres-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 1px solid var(--line-mid);
+        background: var(--line-mid);
+      }
+      @media (max-width: 700px) {
+        .pres-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pres-card {
+        background: var(--bg-alt);
+        padding: 3rem 2.5rem;
+        transition: background 0.25s;
+      }
+      .pres-card:hover {
+        background: var(--bg-card);
+      }
+      .pres-card-num {
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--accent-dim);
+        margin-bottom: 1.2rem;
+      }
+      .pres-card-title {
+        font-family: var(--F-cond);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-bottom: 0.8rem;
+      }
+      .pres-card-body {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 1.85;
+      }
+      .pres-cta {
+        margin-top: 4rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .pres-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        justify-content: space-between;
+        padding: 1rem 1.4rem;
+        border: 1px solid var(--line-mid);
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+        min-width: 200px;
+      }
+      .pres-btn:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
+
+      /* ── CONTACT ── */
+      #contact {
+        background: var(--bg);
+      }
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6rem;
+        align-items: start;
+      }
+      @media (max-width: 700px) {
+        .contact-grid {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+        }
+      }
+      .contact-heading {
+        font-family: var(--F-display);
+        font-size: clamp(56px, 8vw, 110px);
+        line-height: 0.9;
+        color: var(--text);
+        margin-bottom: 2rem;
+      }
+      .contact-heading small {
+        display: block;
+        font-family: var(--F-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        font-weight: 400;
+      }
+      .contact-sub {
+        font-size: 17.5px;
+        font-weight: 300;
+        color: var(--muted);
+        line-height: 2;
+        max-width: 380px;
+      }
+      .contact-channels {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid var(--line-mid);
+        margin-top: 2.5rem;
+      }
+      .contact-channel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid var(--line);
+        font-family: var(--F-mono);
+        transition: background 0.2s;
+      }
+      .contact-channel:last-child {
+        border-bottom: none;
+      }
+      .contact-channel:hover {
+        background: var(--bg-card);
+      }
+      .contact-channel-label {
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+      }
+      .contact-channel-val {
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+      }
+      .contact-form-side {
+        padding-top: 0.5rem;
+      }
+      .cf-field {
+        margin-bottom: 1.2rem;
+      }
+      .cf-label {
+        display: block;
+        font-family: var(--F-mono);
+        font-size: 8px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+      }
+      .cf-input,
+      .cf-textarea {
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--line-mid);
+        color: var(--text);
+        font-family: var(--F-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 0.85rem 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+        resize: none;
+        cursor: crosshair;
+      }
+      .cf-input:focus,
+      .cf-textarea:focus {
+        border-color: var(--accent-dim);
+      }
+      .cf-textarea {
+        height: 120px;
+      }
+      .cf-submit {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 1rem 1.4rem;
+        border: 1px solid var(--line-mid);
+        background: transparent;
+        font-family: var(--F-mono);
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        cursor: crosshair;
+        width: 100%;
+        margin-top: 0.5rem;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .cf-submit:hover {
+        border-color: var(--accent-dim);
+        color: var(--accent);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(22px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.75s ease,
+          transform 0.75s ease;
+      }
+      .reveal.vis {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal.delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal.delay-2 {
+        transition-delay: 0.2s;
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem 1.5rem;
+        }
+        #hero {
+          padding: 5rem 1.5rem 3.5rem;
+        }
+        .wrap {
+          padding: 4rem 1.5rem;
+        }
+        .hw-grid {
+          margin: 0 1.5rem;
+        }
+        .source-inner {
+          padding: 5rem 1.5rem;
+        }
+        footer {
+          padding: 1.5rem;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+        .arch-item:nth-child(odd) {
+          border-right: none;
+          padding-right: 0;
+        }
+        .arch-item:nth-child(even) {
+          padding-left: 0;
+        }
+        .arch-item:nth-last-child(-n + 2) {
+          border-bottom: 1px solid var(--line);
+        }
+        .arch-item:last-child {
+          border-bottom: none;
+        }
+        .hero-bottom {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2rem;
+        }
+        .hero-title-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .hero-title-img img {
+          width: clamp(120px, 50vw, 220px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="nav">
+      <div class="nav-logo">
+        <div class="logo-wrapper">
+          <img src="Tetris_logom.png" alt="ss" /> ·
+          <span style="color: var(--faint)">ARDUINO UNO R3</span>
+        </div>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#about">[01] ABOUT</a></li>
+        <li><a href="#team">[02] TEAM</a></li>
+        <li><a href="#hardware">[03] HARDWARE</a></li>
+        <li><a href="#arch">[04] ARCH</a></li>
+        <li><a href="#showcase">[05] SHOWCASE</a></li>
+        <li><a href="#docs">[06] DOCS</a></li>
+        <li><a href="#contact">[07] CONTACT</a></li>
+      </ul>
+    </nav>
+
+    <section id="hero">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-inner">
+        <div class="hero-tag">
+          &gt;_ ARDUINO UNO R3 · 10 x 20 LED STRIP LIGHTS · C++ ENGINE · CODE
+          PROTECTED UNDER LICENSE
+        </div>
+        <div class="hero-title-row">
+          <h1 class="hero-title">
+            DROP<br />
+            <span class="mdim">CLEAR</span><br />
+            <span class="dim">REPEAT</span>
+          </h1>
+          <div class="hero-title-img">
+            <img src="138742.jpg" alt="Tetris Arduino" />
+          </div>
+        </div>
+        <div class="hero-bottom">
+          <p class="hero-desc">
+            A Tetris engine written in raw C++ for the ARDUINO UNO R3. No
+            abstraction layers. No latency.<br />
+            Just a grid, a counter, and the logic of falling blocks.
+          </p>
+          <div class="hero-stats">
+            <div>
+              <span class="hero-stat-val">32KB</span>
+              <span class="hero-stat-label">FLASH</span>
+            </div>
+            <div>
+              <span class="hero-stat-val">16MHz</span>
+              <span class="hero-stat-label">CLOCK</span>
+            </div>
+            <div>
+              <span class="hero-stat-val">10 x 200</span>
+              <span class="hero-stat-label">LED STRIP</span>
+            </div>
+            <div>
+              <span class="hero-stat-val">8-BIT</span>
+              <span class="hero-stat-label">INTEGER</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-marker">SCROLL ↓</div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_01]</span>
+          <span class="s-name">Philosophy</span>
+        </div>
+        <div class="about-grid reveal delay-1">
+          <div class="about-eyebrow">
+            TETRISARDUINO /<br />OVERVIEW /<br />2026
+          </div>
+          <div>
+            <p class="about-manifesto">
+              A GAME BORN FROM CONSTRAINT.<br />AN ENGINE BUILT ON 32KB OF
+              FLASH.
+            </p>
+            <p class="about-body">
+              "Authours note:* We had some fun and hold backs in the progress of this project we really enjoyed to be honest."
+            </p>
+            <p class="about-body">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ratione
+              aliquid, asperiores quos nam accusamus doloremque alias est ipsam
+              perspiciatis tempora non possimus dolores explicabo consectetur in
+              fugit unde aspernatur doloribus.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_02]</span>
+          <span class="s-name">Team Members</span>
+        </div>
+      </div>
+      <div class="team-grid reveal">
+        <div class="team-card">
+          <div class="team-card-num">MEMBER · 01</div>
+          <div class="team-avatar"><img src="tamii.jpg" alt=""></div>
+          <div class="team-name">Tamir</div>
+          <div class="team-role">Lead Engineer · Firmware</div>
+          <p class="team-bio">
+            Core engine architecture, LED function, C++ optimisation, and basically everything.
+          </p>
+          <a href="tamir.html" class="team-link">WEBSITE</a>
+        </div>
+        <div class="team-card">
+          <div class="team-card-num">MEMBER · 02</div>
+          <div class="team-avatar"><img src="zamka.jpg" alt=""></div>
+          <div class="team-name">Zamka</div>
+          <div class="team-role">Documents · Presentation</div>
+          <p class="team-bio">
+            The handsome guy who managed our team document resources.
+          </p>
+          <a href="zamka.html" class="team-link">WEBSITE</a>
+        </div>
+        <div class="team-card">
+          <div class="team-card-num">MEMBER · 03</div>
+          <div class="team-avatar"><img src="bataa.jpg" alt=""></div>
+          <div class="team-name">Bat Orgil</div>
+          <div class="team-role">Мэргэжлийн скоччин</div>
+          <p class="team-bio">
+            Скоч маш сайн тасласан.
+          </p>
+          <a href="bataa.html" class="team-link">WEBSITE</a>
+        </div>
+      </div>
+      <div style="height: 5.5rem"></div>
+    </section>
+
+    <section id="hardware">
+      <div class="wrap" style="padding-bottom: 2.5rem">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_03]</span>
+          <span class="s-name">Hardware Components</span>
+        </div>
+      </div>
+      <div class="hw-grid reveal">
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 01</div>
+          <div class="hw-name">ARDUINO UNO R3</div>
+          <div class="hw-spec">8-BIT AVR · 16MHZ · 32KB FLASH</div>
+          <p class="hw-desc">
+            A powerful yet so small source of Microcontroller.
+          </p>
+        </div>
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 02</div>
+          <div class="hw-name">LED STRIP LIGHTS</div>
+          <div class="hw-spec">18 x 10 · WS2812B · CRGB</div>
+          <p class="hw-desc">
+            Primarily used for decoration now used for making dreams come true.
+          </p>
+        </div>
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 03</div>
+          <div class="hw-name">Joystick</div>
+          <div class="hw-spec">ANALOG · 8 BIT CAPPED · PRECISION</div>
+          <p class="hw-desc">X , Y perfect for the project of ours.</p>
+        </div>
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 04</div>
+          <div class="hw-name">Push Buttons</div>
+          <div class="hw-spec">BASIC · DURABLE</div>
+          <p class="hw-desc">Low latency and immideate response to signals.</p>
+        </div>
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 05</div>
+          <div class="hw-name">Piezo Buzzer</div>
+          <div class="hw-spec">5V · PWM PIN 3 · EAR HELL</div>
+          <p class="hw-desc">
+            8-bit PWM audio driver. Procedural generation of classic chiptune
+            sound effects and the Tetris theme melody, no samples, all logic.
+          </p>
+        </div>
+        <div class="hw-card">
+          <div class="hw-num">COMPONENT · 06</div>
+          <div class="hw-name">I2C LCD DISPLAY</div>
+          <div class="hw-spec">LIQUID CRYSTAL · ADA · 27XD</div>
+          <p class="hw-desc">
+            Pure display nothing else. Liquid crystal technology.
+          </p>
+        </div>
+      </div>
+      <div style="height: 5.5rem"></div>
+    </section>
+
+    <section id="arch">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_04]</span>
+          <span class="s-name">Engine Architecture</span>
+        </div>
+        <div class="arch-grid reveal delay-1">
+          <div class="arch-item">
+            <span class="arch-n">01</span>
+            <div>
+              <div class="arch-name">Logic</div>
+              <p class="arch-desc">
+                Core engine in optimised C++. Piece rotation, collision
+                detection, and line-clearing, raw register operations, nothing
+                wasted.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">02</span>
+            <div>
+              <div class="arch-name">Display</div>
+              <p class="arch-desc">
+                I2C display. Let's you see your score full real time.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">03</span>
+            <div>
+              <div class="arch-name">Controls</div>
+              <p class="arch-desc">Basically up down left right.</p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">04</span>
+            <div>
+              <div class="arch-name">Memory</div>
+              <p class="arch-desc">
+                PROGMEM optimisation to minimise SRAM usage. Efficient data
+                structures for high memory demands.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">05</span>
+            <div>
+              <div class="arch-name">Audio</div>
+              <p class="arch-desc">
+                8-bit PWM audio driver. Procedural chiptune generation: sound
+                effects and the Korobeiniki melody, all synthesised in firmware.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">06</span>
+            <div>
+              <div class="arch-name">Power</div>
+              <p class="arch-desc">
+                5V for classic Arduino bank. I'll update it to 9V later.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">07</span>
+            <div>
+              <div class="arch-name">Accurate mapping</div>
+              <p class="arch-desc">
+                Okay here I'll just write my words off it was hell and I loved
+                it.
+              </p>
+            </div>
+          </div>
+          <div class="arch-item">
+            <span class="arch-n">08</span>
+            <div>
+              <div class="arch-name">Hardware</div>
+              <p class="arch-desc">
+                ARDUINO UNO R3 for stable and smooth process
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="specs">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_05]</span>
+          <span class="s-name">Specifications</span>
+        </div>
+        <table class="specs-table reveal delay-1">
+          <tr>
+            <td>Main Board</td>
+            <td>ARDUINO UNO R3, 8 bit integer caps.</td>
+          </tr>
+          <tr>
+            <td>Clock Speed</td>
+            <td>16 MHz.</td>
+          </tr>
+          <tr>
+            <td>Flash Memory</td>
+            <td>32 KB (0.5 KB reserved for bootloader)</td>
+          </tr>
+          <tr>
+            <td>SRAM</td>
+            <td>2 KB, PROGMEM optimised for game state</td>
+          </tr>
+          <tr>
+            <td>Display</td>
+            <td>20 x 10 LED STRIP LIGHTS · WS2812B model</td>
+          </tr>
+          <tr>
+            <td>Input</td>
+            <td>4 push buttons + 1 analog joystick</td>
+          </tr>
+          <tr>
+            <td>Audio</td>
+            <td>Piezo buzzer · PWM pin 3 · 8-bit driver</td>
+          </tr>
+          <tr>
+            <td>Power</td>
+            <td>Nothing and · LDO regulated 5V rail</td>
+          </tr>
+          <tr>
+            <td>ARDUINO Dimensions</td>
+            <td>IDK on this one really</td>
+          </tr>
+          <tr>
+            <td>Programming</td>
+            <td>C++ · avr-gcc · Arduino IDE compatible</td>
+          </tr>
+          <tr>
+            <td>Communication</td>
+            <td>Literally some wire and prayers</td>
+          </tr>
+          <tr>
+            <td>Enclosure</td>
+            <td>Industrial · ergonomic handheld form factor</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="showcase">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_06]</span>
+          <span class="s-name">Showcase</span>
+        </div>
+        <div class="showcase-grid reveal delay-1">
+
+          <div class="showcase-item wide">
+            <div class="showcase-tag">SHOWCASE · 00 · HERO BUILD</div>
+            <div class="showcase-title">The Build</div>
+            <p class="showcase-desc">
+              18×10 WS2812B LED strip lights mounted on a hand-cut board. Joystick and
+              buttons wired to the board. Fits in two hands. Efficient. Runs tetris.
+            </p>
+
+            <div class="showcase-media is-image tall">
+              <img src="jayy.jpg" alt="The finished build" />
+            </div>
+
+            <div class="showcase-stat-row">
+              <div>
+                <span class="showcase-stat-val">180</span>
+                <span class="showcase-stat-lbl">LEDS</span>
+              </div>
+              <div>
+                <span class="showcase-stat-val">~60ms</span>
+                <span class="showcase-stat-lbl">FRAME TIME</span>
+              </div>
+              <div>
+                <span class="showcase-stat-val">5V</span>
+                <span class="showcase-stat-lbl">POWER DRAW</span>
+              </div>
+              <div>
+                <span class="showcase-stat-val">C++</span>
+                <span class="showcase-stat-lbl">ENGINE</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase-item">
+            <div class="showcase-tag">SHOWCASE · 01 · RUN</div>
+            <div class="showcase-title">Demo Video</div>
+            <p class="showcase-desc">
+              Watch the full game running on hardware — piece spawns, rotation,
+              line clears, and the Korobeiniki melody playing live.
+            </p>
+
+            <div class="showcase-media is-video">
+              <iframe
+                src="https://youtu.be/aVlAbjByrAs"
+                title="Demo Video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+
+          <div class="showcase-item">
+            <div class="showcase-tag">SHOWCASE · 02 · WIRING</div>
+            <div class="showcase-title">Circuit, Wiring</div>
+            <p class="showcase-desc">
+              Hand-routed wiring from the Arduino to the LED data line, joystick
+              analogue pins, push-button inputs, and the piezo buzzer PWM output.
+            </p>
+
+            <div class="showcase-media is-image">
+              <img src="YOUR_WIRING_PHOTO.jpg" alt="Circuit wiring" />
+              <div class="showcase-media-placeholder">
+                <span>WIRING PHOTO</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase-item">
+            <div class="showcase-tag">SHOWCASE · 03 · CODE</div>
+            <div class="showcase-title">Source Code Guide</div>
+            <p class="showcase-desc">
+              The full engine in one .ino file. Piece tables in PROGMEM,
+              WS2812B bit-banging, collision logic, and the PWM melody driver.
+            </p>
+
+            <div class="showcase-media is-image">
+              <img src="YOUR_CODE_SCREENSHOT.jpg" alt="Source code screenshot" />
+              <div class="showcase-media-placeholder">
+                <span>CODE SCREENSHOT</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase-item">
+            <div class="showcase-tag">SHOWCASE · 04 · AUDIO</div>
+            <div class="showcase-title">Sound System</div>
+            <p class="showcase-desc">
+              8-bit PWM audio driver. Procedural chiptune generation — Korobeiniki
+              and sound effects, all synthesised in firmware, zero samples.
+            </p>
+
+            <div class="showcase-media is-video-file">
+              <video
+                src="YOUR_AUDIO_DEMO.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                poster="YOUR_AUDIO_POSTER.jpg"
+              ></video>
+              <div class="showcase-media-placeholder">
+                <span>AUDIO DEMO VIDEO</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="docs">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_07]</span>
+          <span class="s-name">Documents</span>
+        </div>
+        <div class="docs-list reveal delay-1">
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 01</div>
+            <div>
+              <div class="doc-info-name">Project Report</div>
+              <div class="doc-info-meta">DOCS · 2026 · MONGOL</div>
+            </div>
+            <a href="mongol.pdf" class="doc-link">[VIEW] →</a>
+          </div>
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 02</div>
+            <div>
+              <div class="doc-info-name">Project Report</div>
+              <div class="doc-info-meta">DOCS · 2026 · ENGLISH</div>
+            </div>
+            <a href="english.pdf" class="doc-link">[VIEW] →</a>
+          </div>
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 02</div>
+            <div>
+              <div class="doc-info-name">Circuit Schematic</div>
+              <div class="doc-info-meta">SCREENSHOT · TINKERCAD</div>
+            </div>
+            <a href="shot5.png" class="doc-link">[VIEW] →</a>
+          </div>
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 03</div>
+            <div>
+              <div class="doc-info-name">Component Datasheet Bundle</div>
+              <div class="doc-info-meta">
+                ZIP · WS2812B · ARDUINO UNO · JOYSTICK
+              </div>
+            </div>
+            <a href="#" class="doc-link">[DOWNLOAD] →</a>
+          </div>
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 04</div>
+            <div>
+              <div class="doc-info-name">Main source von our project</div>
+              <div class="doc-info-meta">C++ · ARDUINO IDE · LICENSED</div>
+            </div>
+            <a href="https://github.com/Good0211V4/good0211v4.github.io" class="doc-link">[GITHUB] →</a>
+          </div>
+          <div class="doc-row">
+            <div class="doc-idx">DOC · 06</div>
+            <div>
+              <div class="doc-info-name">Bill of Materials</div>
+              <div class="doc-info-meta">Basically free but just see</div>
+            </div>
+            <a href="money.txt" class="doc-link">[DOWNLOAD] →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="presentation">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_08]</span>
+          <span class="s-name">Presentation</span>
+        </div>
+        <div class="pres-grid reveal delay-1">
+          <div class="pres-card">
+            <div class="pres-card-num">CARD · 01</div>
+            <div class="pres-card-title">Project Overview</div>
+            <p class="pres-card-body">
+              What is TetrisArduino, why it exists, and what makes it different.
+              A Tetris engine in 32KB, controlled by a joystick, rendered on 180
+              LEDs.
+            </p>
+          </div>
+          <div class="pres-card">
+            <div class="pres-card-num">CARD · 02</div>
+            <div class="pres-card-title">Idk bro</div>
+            <p class="pres-card-body">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum esse ipsam quia asperiores, eius vero ad earum distinctio nam accusamus dolor omnis sint, deleniti alias nostrum iure unde accusantium? Nisi?
+            </p>
+          </div>
+        </div>
+        <div class="pres-cta reveal delay-2">
+          <a href="#" class="pres-btn"
+            ><span>[GOOGLEDOCS] - Visit our presentation</span><span>→</span></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <section id="source">
+      <div class="source-inner">
+        <div class="reveal">
+          <h2 class="source-head">
+            <small>&gt;_ READY TO</small>
+            DEPLOY.
+          </h2>
+        </div>
+        <div class="source-links reveal delay-1">
+          <a href="#" class="src-btn">
+            <span>[GITHUB] - View Source</span>
+            <span>→</span>
+          </a>
+          <a href="#" class="src-btn">
+            <span>[DOCS] - my thing so license </span>
+            <span>→</span>
+          </a>
+          <a href="tetris_led (17).html" class="src-btn">
+            <span>[PAGE] - play our game on the html! </span>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="s-label reveal">
+          <span class="s-index">[INDEX_09]</span>
+          <span class="s-name">Contact Us</span>
+        </div>
+        <div class="contact-grid reveal delay-1">
+          <div>
+            <h2 class="contact-heading">
+              <small>&gt;_ GET IN</small>
+              TOUCH.
+            </h2>
+            <p class="contact-sub">
+              if you have suggestions, and want to recreate and and have questions on the project. We're in touch maybe idk how to backend lol
+            </p>
+            <div class="contact-channels">
+              <div class="contact-channel">
+                <span class="contact-channel-label">GITHUB</span>
+                <span class="contact-channel-val"
+                  >i'll make a new respiratorry!</span
+                >
+              </div>
+              <div class="contact-channel">
+                <span class="contact-channel-label">EMAIL</span>
+                <span class="contact-channel-val">nest23301038@nhs.edu.mn</span>
+              </div>
+              <div class="contact-channel">
+                <span class="contact-channel-label">DISCORD</span>
+                <span class="contact-channel-val"
+                  >discord.gg/Good0211V2</span
+                >
+              </div>
+              <div class="contact-channel">
+                <span class="contact-channel-label">Facebook</span>
+                <span class="contact-channel-val">@Tamir Batbayar</span>
+              </div>
+            </div>
+          </div>
+          <form class="contact-form-side" action="https://formspree.io/f/xlgzloze" method="POST">
+            <div class="cf-field">
+              <label class="cf-label">NAME
+              <input type="text" class="cf-input" name="Name" placeholder="YOUR NAME" />
+              </label>
+            </div>
+            <div class="cf-field">
+              <label class="cf-label" name="E-mail" >EMAIL
+              <input
+                type="email"
+                class="cf-input"
+                placeholder="YOUR@EMAIL.COM"
+                name="E-mail"
+              />
+              </label>
+            </div>
+            <div class="cf-field">
+              <label class="cf-label">SUBJECT
+              <input
+                type="text"
+                class="cf-input"
+                placeholder="WHAT IS THIS ABOUT"
+                name="What is this about?"
+              />
+              </label>
+            </div>
+            <div class="cf-field">
+              <label class="cf-label" name="Tung tung tung sahur">MESSAGE
+              <textarea
+                class="cf-textarea"
+                placeholder="TYPE YOUR MESSAGE HERE... (type type haha!)"
+                name="text"
+              ></textarea>
+              </label>
+            </div>
+            <button class="cf-submit" type="submit">
+              <span>[TRANSMIT] - Send Message</span>
+              <span>→</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="ft">
+        © 2026 <b>TETRISARDUINO(Xyryon)</b> ARDUINO UNO R3 · ALL RIGHTS RESERVED
+      </div>
+      <div class="ft">
+        <b>INDUSTRIAL BRUTALISM · RETRO LOGIC · EMBEDDED SYSTEMS</b>
+      </div>
+    </footer>
+
+    <script>
+      const nav = document.getElementById("nav");
+      window.addEventListener(
+        "scroll",
+        () => {
+          nav.classList.toggle("scrolled", window.scrollY > 60);
+        },
+        { passive: true },
+      );
+
+      const reveals = document.querySelectorAll(".reveal");
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("vis");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
+      );
+      reveals.forEach((el) => io.observe(el));
+
+      /* Hide the grid-pattern placeholder once the real media loads */
+      document.querySelectorAll(".showcase-media img, .showcase-media video").forEach(el => {
+        const placeholder = el.closest(".showcase-media")?.querySelector(".showcase-media-placeholder");
+        if (!placeholder) return;
+        const hide = () => { placeholder.style.display = "none"; };
+        if (el.complete || el.readyState >= 2) hide();
+        else el.addEventListener("load", hide);
+        el.addEventListener("loadeddata", hide);
+      });
+    </script>
+  </body>
+</html>
